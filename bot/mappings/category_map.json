@@ -1,0 +1,14 @@
+{
+  "men": {
+    "display_name": "Men",
+    "url_param": "men"
+  },
+  "women": {
+    "display_name": "Women", 
+    "url_param": "women"
+  },
+  "kids": {
+    "display_name": "Kids",
+    "url_param": "kids"
+  }
+}
