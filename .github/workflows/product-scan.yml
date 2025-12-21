@@ -33,6 +33,7 @@ jobs:
         TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
       run: |
         cd bot
+        python test_user_data.py
         python scheduler_runner.py
         
     - name: Commit updated user data
