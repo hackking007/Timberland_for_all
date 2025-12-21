@@ -2,6 +2,8 @@ import os
 
 # Telegram Bot Configuration
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
+if not TELEGRAM_TOKEN:
+    raise ValueError("TELEGRAM_TOKEN environment variable is required")
 
 # Base URLs and Site Configuration
 TIMBERLAND_BASE_URL = "https://www.timberland.co.il"
