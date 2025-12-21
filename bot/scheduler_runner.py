@@ -17,7 +17,8 @@ async def run_scan():
     user_store = UserStore()
     notifier = Notifier()
     
-    active_users = user_store.get_all_active_users()
+    active_users = {uid: data for uid, data in user_store.data["users"].items() 
+                    if data.get("active", False) and data.get("onboarding_state") == "COMPLETED"}
     print(f"Found {len(active_users)} active users")
     
     for user_id, user_data in active_users.items():
@@ -46,10 +47,13 @@ async def run_scan():
                 await notifier.send_notifications(user_id, events)
             
             # Update state
+            seen_products = user_data.get("seen_products", {})
+            price_history = user_data.get("price_history", {})
+            
             seen_products, price_history = ChangeDetector.update_seen_products(
                 seen_products, 
                 products, 
-                user_data.get("price_history", {})
+                price_history
             )
             
             user_store.update_user(user_id, {
