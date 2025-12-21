@@ -1,18 +1,20 @@
-from config import SEARCH_URL
+import json
+import os
 
 class URLBuilder:
     @staticmethod
-    def build_url(category: str, size_code: str, price_min: int, price_max: int) -> str:
-        params = []
+    def build_url(category: str, size_label: str, price_min: int, price_max: int) -> str:
+        # Load size mapping
+        size_map_file = "mappings/size_map.json"
+        if os.path.exists(size_map_file):
+            with open(size_map_file, 'r') as f:
+                size_map = json.load(f)
+        else:
+            size_map = {}
         
-        if category:
-            params.append(f"gender={category}")
+        # Get size code from mapping
+        size_code = size_map.get(category, {}).get(size_label, size_label)
         
-        if size_code:
-            params.append(f"size={size_code}")
-        
-        if price_min is not None and price_max is not None:
-            params.append(f"price={price_min}_{price_max}")
-        
-        query_string = "&".join(params)
-        return f"{SEARCH_URL}?{query_string}" if query_string else SEARCH_URL
+        # Build correct URL format
+        url = f"https://www.timberland.co.il/{category}/footwear?price={price_min}_{price_max}&size={size_code}"
+        return url
