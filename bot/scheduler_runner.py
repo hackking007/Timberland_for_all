@@ -4,6 +4,7 @@ from user_store import UserStore
 from scraper import Scraper
 from detector import ChangeDetector
 from notifier import Notifier
+from coupon_scraper import CouponScraper
 
 async def run_scan():
     print("Starting scheduled scan...")
@@ -55,6 +56,11 @@ async def run_scan():
             # Send notifications
             if events:
                 await notifier.send_notifications(user_id, events)
+            
+            # Send coupons (always, regardless of products)
+            coupons = CouponScraper.fetch_coupons()
+            if coupons:
+                await notifier.send_coupons(user_id, coupons)
             
             # Update state
             seen_products = user_data.get("seen_products", {})
