@@ -24,7 +24,7 @@ class Scraper:
         products = []
         
         # Adjust selectors based on actual site structure
-        product_items = soup.select('.product-item, .product-card, [data-product-id]')
+        product_items = soup.select('.product-item')
         
         for item in product_items:
             try:
