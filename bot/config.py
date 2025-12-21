@@ -10,7 +10,7 @@ TIMBERLAND_BASE_URL = "https://www.timberland.co.il"
 SEARCH_URL = f"{TIMBERLAND_BASE_URL}/search"
 
 # File paths
-USER_DATA_FILE = "bot/data/user_data.json"
+USER_DATA_FILE = "data/user_data.json"
 SIZE_MAP_FILE = "bot/mappings/size_map.json"
 CATEGORY_MAP_FILE = "bot/mappings/category_map.json"
 
