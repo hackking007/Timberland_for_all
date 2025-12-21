@@ -15,11 +15,21 @@ async def run_scan():
         return
     
     user_store = UserStore()
-    notifier = Notifier()
+    print(f"Loaded user store with {len(user_store.data.get('users', {}))} total users")
     
     active_users = {uid: data for uid, data in user_store.data["users"].items() 
                     if data.get("active", False) and data.get("onboarding_state") == "COMPLETED"}
     print(f"Found {len(active_users)} active users")
+    
+    # Debug: print user data
+    for uid, data in user_store.data.get("users", {}).items():
+        print(f"User {uid}: active={data.get('active')}, state={data.get('onboarding_state')}")
+    
+    if not active_users:
+        print("No active users found, exiting")
+        return
+    
+    notifier = Notifier()
     
     for user_id, user_data in active_users.items():
         try:
