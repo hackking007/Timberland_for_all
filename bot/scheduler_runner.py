@@ -1,4 +1,5 @@
 import asyncio
+from config import TELEGRAM_TOKEN
 from user_store import UserStore
 from scraper import Scraper
 from detector import ChangeDetector
@@ -6,6 +7,12 @@ from notifier import Notifier
 
 async def run_scan():
     print("Starting scheduled scan...")
+    
+    # Check if token exists
+    if not TELEGRAM_TOKEN:
+        print("ERROR: TELEGRAM_TOKEN not found in environment variables")
+        print("Please add TELEGRAM_TOKEN to GitHub Secrets")
+        return
     
     user_store = UserStore()
     notifier = Notifier()
