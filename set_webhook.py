@@ -1,8 +1,10 @@
 import requests
 import os
 
-TOKEN = "your_bot_token_here"
-VERCEL_URL = "https://your-app.vercel.app/api/webhook"
+
+TOKEN = "[Credentials]"
+VERCEL_URL = "timberland-for-bm9zwsc1k-moshes-projects-2721c305.vercel.app/api/webhook"
+
 
 # Set webhook
 response = requests.post(
@@ -10,4 +12,6 @@ response = requests.post(
     json={"url": VERCEL_URL}
 )
 
+
 print(f"Webhook set: {response.json()}")
+
