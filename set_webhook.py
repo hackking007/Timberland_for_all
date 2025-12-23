@@ -6,7 +6,9 @@ TOKEN = os.environ.get("TELEGRAM_TOKEN")  # Use environment variable
 if not TOKEN:
     raise ValueError("Please set TELEGRAM_TOKEN environment variable")
 
-VERCEL_URL = "https://timberland-for-bm9zwsc1k-moshes-projects-2721c305.vercel.app/api/webhook"
+# TODO: Replace with your actual Vercel production URL
+# Find it at: https://vercel.com/dashboard -> Your Project -> Domains
+VERCEL_URL = "https://timberland-for.vercel.app/api/webhook"  # Update this!
 
 
 # Set webhook
@@ -17,3 +19,4 @@ response = requests.post(
 
 
 print(f"Webhook set: {response.json()}")
+
