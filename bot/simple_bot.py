@@ -4,18 +4,25 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Cont
 import json
 
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
-USER_DATA_FILE = "data/user_data.json"
+# Use /tmp for Vercel serverless (read-only filesystem elsewhere)
+USER_DATA_FILE = "/tmp/user_data.json" if os.path.exists("/tmp") else "data/user_data.json"
 
 def load_user_data():
     if os.path.exists(USER_DATA_FILE):
-        with open(USER_DATA_FILE, 'r') as f:
-            return json.load(f)
+        try:
+            with open(USER_DATA_FILE, 'r') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading user data: {e}")
     return {"users": {}}
 
 def save_user_data(data):
-    os.makedirs(os.path.dirname(USER_DATA_FILE), exist_ok=True)
-    with open(USER_DATA_FILE, 'w') as f:
-        json.dump(data, f, indent=2)
+    try:
+        os.makedirs(os.path.dirname(USER_DATA_FILE), exist_ok=True)
+        with open(USER_DATA_FILE, 'w') as f:
+            json.dump(data, f, indent=2)
+    except Exception as e:
+        print(f"Error saving user data: {e}")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
@@ -24,7 +31,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("👶 Kids", callback_data="cat_kids")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("Welcome! Select category:", reply_markup=reply_markup)
+    
+    # Handle both direct message and callback query
+    if update.message:
+        await update.message.reply_text("Welcome! Select category:", reply_markup=reply_markup)
+    elif update.callback_query:
+        await update.callback_query.message.reply_text("Welcome! Select category:", reply_markup=reply_markup)
 
 async def category_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
