@@ -1,69 +1,53 @@
-import json
 import os
-import sys
-from flask import Flask, request, jsonify
+import asyncio
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
-import asyncio
+from functools import lru_cache
 
-# Import your bot modules
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+# Import your handlers
 from bot.simple_bot import start, category_callback, size_callback, price_callback
 
 TOKEN = os.environ.get("TELEGRAM_TOKEN")
 
-# Create Flask app
-app = Flask(__name__)
-
-# Create bot application (reuse across requests)
-bot_app = None
-
+@lru_cache()
 def get_bot_app():
-    global bot_app
-    if bot_app is None:
-        bot_app = Application.builder().token(TOKEN).build()
-        
-        # Add handlers
-        bot_app.add_handler(CommandHandler("start", start))
-        bot_app.add_handler(CallbackQueryHandler(category_callback, pattern="^cat_"))
-        bot_app.add_handler(CallbackQueryHandler(size_callback, pattern="^size_"))
-        bot_app.add_handler(CallbackQueryHandler(price_callback, pattern="^price_"))
-        
-        # Initialize the application
-        asyncio.get_event_loop().run_until_complete(bot_app.initialize())
-    
-    return bot_app
+    app = Application.builder().token(TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CallbackQueryHandler(category_callback, pattern="^cat_"))
+    app.add_handler(CallbackQueryHandler(size_callback, pattern="^size_"))
+    app.add_handler(CallbackQueryHandler(price_callback, pattern="^price_"))
+    return app
 
-@app.route('/api/webhook', methods=['POST', 'GET'])
-def webhook():
-    if request.method == 'GET':
-        return jsonify({"status": "Bot is running", "ok": True})
-    
+def handler(request):
+    """
+    Vercel Python function entrypoint.
+    It must accept a request and return a body & status.
+    """
+    # Verify it's POST
+    if request.method != "POST":
+        return {
+            "statusCode": 200,
+            "body": "OK – send POST from Telegram only"
+        }
+
     try:
-        # Get update data
-        update_data = request.get_json(force=True)
-        print(f"Received update: {update_data}")  # Debug log
-        
-        # Create Update object
-        application = get_bot_app()
-        update = Update.de_json(update_data, application.bot)
-        
-        # Process update with proper event loop handling
+        update_data = request.get_json()
+
+        app = get_bot_app()
+
+        # Convert to Update
+        update = Update.de_json(update_data, app.bot)
+
+        # Process update
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        try:
-            loop.run_until_complete(application.process_update(update))
-        finally:
-            loop.close()
-        
-        return jsonify({"ok": True})
+        loop.run_until_complete(app.process_update(update))
+        loop.close()
+
+        return {"statusCode": 200, "body": "OK"}
     
     except Exception as e:
-        print(f"Error processing update: {e}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({"ok": False, "error": str(e)}), 500
-
-# For Vercel serverless
-def handler(environ, start_response):
-    return app(environ, start_response)
+        return {
+            "statusCode": 500,
+            "body": f"Error: {str(e)}"
+        }
