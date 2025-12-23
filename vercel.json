@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/webhook.py": {
+      "runtime": "python3.9"
+    }
+  },
+  "env": {
+    "TELEGRAM_TOKEN": "@telegram_token"
+  }
+}
