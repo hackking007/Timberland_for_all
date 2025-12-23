@@ -2,7 +2,7 @@ import requests
 import os
 
 
-TOKEN = os.environ.get("TELEGRAM_TOKEN")  # Use environment variable
+TOKEN = os.environ.get("8006075610:AAFWTegJwRvl6x7AIYfgs94agdYEZlu1-k0")  # Use environment variable
 if not TOKEN:
     raise ValueError("Please set TELEGRAM_TOKEN environment variable")
 
