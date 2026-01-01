@@ -1,0 +1,45 @@
+name: Product Tracker Scan
+
+on:
+  schedule:
+    # Run twice daily at 8 AM and 8 PM UTC
+    - cron: '0 8,20 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write  # Allow writing to repository
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        
+    - name: Run product scan
+      env:
+        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+      run: |
+        cd bot
+        python test_user_data.py
+        python scheduler_runner.py
+        
+    - name: Commit updated user data
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add bot/data/user_data.json
+        git diff --staged --quiet || git commit -m "Update user data after scan"
+        git push

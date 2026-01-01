@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/webhook",
+      "destination": "api/webhook.py"
+    },
+    {
+      "source": "/api/cron",
+      "destination": "api/cron.py"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "0 8,20 * * *"
+    }
+  ]
+}
