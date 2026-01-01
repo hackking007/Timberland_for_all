@@ -1,4 +1,4 @@
-# Multi-User Telegram Product Tracking Bot
+# Multi-User Telegram Product Tracking Bot (Active)
 
 A modular Telegram bot that tracks product prices and availability across multiple users with personalized filters.
 
