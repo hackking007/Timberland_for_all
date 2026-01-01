@@ -3,15 +3,13 @@ import sys
 import asyncio
 from flask import Flask, request, jsonify
 
-# Add bot directory to path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from telegram import Update
-from bot.telegram_bot import TelegramBot
-
 app = Flask(__name__)
 
 async def run_bot_logic(update_data):
+    # Lazy import to avoid Vercel loading issues at top level
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+    from bot.telegram_bot import TelegramBot
+    
     # Initialize the bot instance (connects to Mongo, sets up handlers)
     bot_instance = TelegramBot()
     telegram_app = bot_instance.app
@@ -27,6 +25,8 @@ def webhook_handler():
         return "Bot is running!", 200
     
     try:
+        from telegram import Update # Import Update here too if needed or keep top level if safe
+        
         update_data = request.get_json()
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -37,4 +37,5 @@ def webhook_handler():
         print(f"Webhook error: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# handler = app
+# Vercel handler - explicitly set
+handler = app
