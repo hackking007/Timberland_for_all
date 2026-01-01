@@ -37,5 +37,4 @@ def webhook_handler():
         print(f"Webhook error: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# Vercel handler
-handler = app
+# handler = app
